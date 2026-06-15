@@ -4,6 +4,7 @@ require_relative "scanner"
 require_relative "association_extractor"
 require_relative "graph_builder"
 require_relative "stats"
+require_relative "graph_exporter"
 
 module Atlas
   class CLI < Thor
@@ -30,6 +31,16 @@ module Atlas
       graph = GraphBuilder.new(scanner).build
 
       Stats.new(graph).print
+    end
+
+    desc "graph PATH", "Generate graph files"
+
+    def graph(path)
+      scanner = Scanner.new(path)
+      graph = GraphBuilder.new(scanner).build
+      GraphExporter.new(graph).export_dot
+
+      puts "Generate atlas.dot"
     end
   end
 end

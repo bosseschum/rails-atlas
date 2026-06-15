@@ -1,0 +1,78 @@
+digraph Atlas {
+bank_account -> bank_connection [label="belongs_to"];
+
+bank_account -> bank_transaction [label="has_many"];
+
+bank_connection -> organization [label="belongs_to"];
+
+bank_connection -> bank_account [label="has_many"];
+
+bank_transaction -> bank_account [label="belongs_to"];
+
+inventory_count -> organization [label="belongs_to"];
+
+inventory_count -> product [label="belongs_to"];
+
+inventory_count -> member [label="belongs_to"];
+
+member -> organization [label="has_many"];
+
+member -> organization_membership [label="has_many"];
+
+member -> transaction [label="has_many"];
+
+member -> purchase [label="has_many"];
+
+member -> inventory_count [label="has_many"];
+
+member -> request [label="has_many"];
+
+organization -> organization_membership [label="has_many"];
+
+organization -> member [label="has_many"];
+
+organization -> product [label="has_many"];
+
+organization -> transaction [label="has_many"];
+
+organization -> purchase [label="has_many"];
+
+organization -> inventory_count [label="has_many"];
+
+organization -> request [label="has_many"];
+
+organization -> setting [label="has_many"];
+
+organization -> bank_connection [label="has_one"];
+
+organization -> bank_account [label="has_many"];
+
+organization_membership -> member [label="belongs_to"];
+
+organization_membership -> organization [label="belongs_to"];
+
+product -> organization [label="belongs_to"];
+
+product -> transaction [label="has_many"];
+
+product -> purchase [label="has_many"];
+
+product -> inventory_count [label="has_many"];
+
+purchase -> organization [label="belongs_to"];
+
+purchase -> product [label="belongs_to"];
+
+purchase -> member [label="belongs_to"];
+
+request -> member [label="belongs_to"];
+
+setting -> organization [label="belongs_to"];
+
+transaction -> organization [label="belongs_to"];
+
+transaction -> member [label="belongs_to"];
+
+transaction -> product [label="belongs_to"];
+
+}
