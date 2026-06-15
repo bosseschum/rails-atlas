@@ -5,6 +5,7 @@ require_relative "association_extractor"
 require_relative "graph_builder"
 require_relative "stats"
 require_relative "graph_exporter"
+require_relative "inspector"
 
 module Atlas
   class CLI < Thor
@@ -41,6 +42,33 @@ module Atlas
       GraphExporter.new(graph).export_dot
 
       puts "Generate atlas.dot"
+    end
+
+    desc "model PATH MODEL", "Inspect a model"
+
+    def model(path, model)
+      scanner = Scanner.new(path)
+      graph = GraphBuilder.new(scanner).build
+      result = Inspector.new(graph).inspect(model)
+
+      puts
+      puts "Model: #{model}"
+      puts
+
+      puts "Outgoing Associations:"
+      puts "----------------------"
+
+      result[:outgoing].each do |edge|
+        puts "#{edge[:relationship]} -> #{edge[:target]}"
+      end
+
+      puts
+      puts "Incoming Associations:"
+      puts "----------------------"
+
+      result[:incoming].each do |edge|
+        puts "#{edge[:source]} #{edge[:relationship]} #{edge[:target]}"
+      end
     end
   end
 end
