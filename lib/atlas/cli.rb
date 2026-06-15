@@ -1,8 +1,9 @@
 require "thor"
+require "json"
 require_relative "scanner"
 require_relative "association_extractor"
 require_relative "graph_builder"
-require "json"
+require_relative "stats"
 
 module Atlas
   class CLI < Thor
@@ -19,6 +20,16 @@ module Atlas
       )
 
       puts "Scan complete. Atlas graph saved to atlas.json"
+    end
+
+    desc "stats PATH", "Show graph statistics"
+
+    def stats(path)
+      scanner = Scanner.new(path)
+
+      graph = GraphBuilder.new(scanner).build
+
+      Stats.new(graph).print
     end
   end
 end
