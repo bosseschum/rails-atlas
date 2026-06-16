@@ -7,16 +7,10 @@ module Atlas
     end
 
     def top(limit = 10)
-      counts = Hash.new(0)
-
-      @graph[:edges].each do |edge|
-        counts[edge[:source]] += 1
-        counts[edge[:target]] += 1
-      end
-
-      counts
-        .sort_by { |_, count| -count }
-        .first(limit)
+      @graph.nodes
+            .map { |node| [node, @graph.degree(node)] }
+            .sort_by { |_, degree| -degree }
+            .first(limit)
     end
   end
 end

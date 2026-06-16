@@ -1,21 +1,24 @@
-require "json"
-require "active_support/inflector"
+# frozen_string_literal: true
+
+require 'json'
+require 'active_support/inflector'
+require_relative 'graph'
 
 module Atlas
-  class GraphBuilder
+  class GraphBuilder # rubocop:disable Style/Documentation
     def initialize(scanner)
       @scanner = scanner
     end
 
-    def build
+    def build # rubocop:disable Metrics/MethodLength
       nodes = []
       edges = []
 
       @scanner.model_files.each do |file|
-        model_name = File.basename(file, ".rb")
+        model_name = File.basename(file, '.rb')
         nodes << {
           id: model_name,
-          type: "model",
+          type: 'model',
         }
 
         extractor = AssociationExtractor.new(file)
@@ -32,10 +35,7 @@ module Atlas
         end
       end
 
-      {
-        nodes: nodes.uniq,
-        edges: edges,
-      }
+      Graph.new(nodes: nodes.uniq, edges: edges)
     end
   end
 end

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Atlas
-  class Inspector
+  class Inspector # rubocop:disable Style/Documentation
     def initialize(graph)
       @graph = graph
     end
@@ -14,13 +16,13 @@ module Atlas
     private
 
     def outgoing_for(model_name)
-      @graph[:edges].select do |edge|
+      @graph.edges.select do |edge|
         edge[:source] == model_name
       end
     end
 
     def incoming_for(model_name)
-      @graph[:edges].select do |edge|
+      @graph.edges.select do |edge|
         edge[:target] == model_name
       end
     end

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Atlas
-  class Project
+  class Project # rubocop:disable Style/Documentation
     attr_reader :path
 
     def initialize(path)
