@@ -31,10 +31,26 @@
       background-color: white;
       border-left: 1px solid #ddd;
 
+      box-sizing: border-box;
+    }
+
+    #sidebar-content {
+      height: 100%;
       overflow-y: auto;
       padding: 1rem;
+    }
 
-      box-sizing: border-box;
+    #drag-handle {
+      position: absolute;
+      top: 50%;
+      left: -3px;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 50px;
+      background-color: #ccc;
+      cursor: col-resize;
+      border-radius: 10px;
+      z-index: 10;
     }
 
     #search {
@@ -51,12 +67,15 @@
 </head>
 
 <body>
-  <input type="text" id="search" placeholder="Find model..." />
+  <input type="text" id="search" placeholder="Find model..."/>
   <div id="network"></div>
 
   <div id="sidebar">
-    <h2>Rails Atlas</h2>
-    Click on a model node to see its details
+    <div id="drag-handle"></div>
+    <div id="sidebar-content">
+      <h2>Rails Atlas</h2>
+      Click on a model node to see its details
+    </div>
   </div>
 
   <script>
@@ -131,9 +150,9 @@
         }
 
         function renderSidebar(model, connections, impact) {
-          const sidebar = document.getElementById('sidebar')
+          const sidebarContent = document.getElementById('sidebar-content')
 
-          sidebar.innerHTML = `
+          sidebarContent.innerHTML = `
             <h2>${model}</h2>
 
             <h3>Connections</h3>
@@ -182,7 +201,7 @@
             })
           })
 
-          document.getElementById('sidebar').innerHTML = `
+          document.getElementById('sidebar-content').innerHTML = `
           <h2>Rails Atlas</h2>
           <p>Click on a model to see its details</p>
           `
@@ -190,6 +209,31 @@
 
       })
 
+      const sidebar = document.getElementById('sidebar')
+      const dragHandle = document.querySelector('#drag-handle')
+
+      dragHandle.addEventListener('mousedown', (e) => {
+        document.addEventListener('mousemove', resizeSidebar);
+        document.addEventListener('mouseup', stopResize);
+      });
+
+      function resizeSidebar(e) {
+        const newWidth = window.innerWidth - e.clientX;
+        if (newWidth > 200 && newWidth < 600) {
+          sidebar.style.width = `${newWidth}px`;
+
+          document.getElementById('network').style.width = `calc(100vw - ${newWidth}px)`;
+          network.redraw()
+          network.fit({
+            animation: false
+          })
+        }
+      }
+
+      function stopResize() {
+        document.removeEventListener('mousemove', resizeSidebar);
+        document.removeEventListener('mouseup', stopResize);
+      }
 
   </script>
 </body>
