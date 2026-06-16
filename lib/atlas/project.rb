@@ -25,5 +25,13 @@ module Atlas
     def neighbors
       @neighbors ||= Neighbors.new(graph)
     end
+
+    def hotspots
+      @hotspots ||= Hotspots.new(graph)
+    end
+
+    def smells
+      @smells ||= Smells.new(graph)
+    end
   end
 end

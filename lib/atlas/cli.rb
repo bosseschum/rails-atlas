@@ -11,6 +11,8 @@ require_relative 'graph_exporter'
 require_relative 'inspector'
 require_relative 'path_finder'
 require_relative 'neighbors'
+require_relative 'hotspots'
+require_relative 'smells'
 
 module Atlas
   class CLI < Thor # rubocop:disable Style/Documentation
@@ -109,6 +111,36 @@ module Atlas
         else
           puts "[IN] #{neighbor[:model]} #{neighbor[:relationship]} #{neighbor[:association_name]}"
         end
+      end
+    end
+
+    desc 'hotspots PATH', 'Show architecture hotspots'
+
+    def hotspots(path, _limit = 10)
+      project = Project.new(path)
+
+      puts
+      puts 'Architectural Hotspots'
+      puts '---------------------'
+      puts
+
+      project.hotspots.top.each do |model, count|
+        puts "#{model} (#{count})"
+      end
+    end
+
+    desc 'smells PATH', 'Show architectural smells'
+
+    def smells(path)
+      project = Project.new(path)
+
+      puts
+      puts 'Architectural Smells'
+      puts '-------------------'
+      puts
+
+      project.smells.god_models.each do |model, count|
+        puts "#{model} - #{count} connections"
       end
     end
   end
