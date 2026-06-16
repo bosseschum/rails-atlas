@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rails Atlas</title>
+</head>
+<body>
+  <h1>Rails Atlas</h1>
+
+  <ul id="output">
+    <li>Loading...</li>
+  </ul>
+
+  <script>
+    fetch('/api/graph')
+        .then(r => r.json())
+        .then(data => {
+        const output = document.getElementById('output')
+
+        output.innerHTML = data.nodes
+            .map(node => `<li>${node.id}</li>`)
+            .join('')
+        })
+  </script>
+</body>
+</html>

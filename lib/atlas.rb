@@ -18,3 +18,5 @@ require_relative 'atlas/impact'
 require_relative 'atlas/inspector'
 
 require_relative 'atlas/cli'
+
+require_relative 'atlas/server'

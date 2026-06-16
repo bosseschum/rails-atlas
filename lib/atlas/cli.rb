@@ -176,5 +176,15 @@ module Atlas
       puts
       puts "Total Reach: #{impact.count} models"
     end
+
+    desc 'serve PATH', 'Serve the architecture graph'
+
+    def serve(path)
+      project = Project.new(path)
+      Atlas::Server.project = project
+      Atlas::Server.run!(
+        port: 4567
+      )
+    end
   end
 end
