@@ -1,4 +1,5 @@
 require "prism"
+require "active_support/inflector"
 
 module Atlas
   class AssociationExtractor
@@ -37,7 +38,8 @@ module Atlas
           target = extract_target(node)
           associations << {
             type: method_name,
-            target: target
+            association_name: target,
+            target: target.to_s.singularize
           }
         end
       end

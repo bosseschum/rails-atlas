@@ -25,8 +25,9 @@ module Atlas
 
           edges << {
             source: model_name,
-            target: target,
+            target: association[:target],
             relationship: association[:type],
+            association_name: association[:association_name]
           }
         end
       end

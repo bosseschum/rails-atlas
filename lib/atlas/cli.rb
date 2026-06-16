@@ -59,7 +59,7 @@ module Atlas
       puts "----------------------"
 
       result[:outgoing].each do |edge|
-        puts "#{edge[:relationship]} -> #{edge[:target]}"
+        puts "#{edge[:relationship]} -> #{edge[:association_name]}"
       end
 
       puts
@@ -67,7 +67,7 @@ module Atlas
       puts "----------------------"
 
       result[:incoming].each do |edge|
-        puts "#{edge[:source]} #{edge[:relationship]} #{edge[:target]}"
+        puts "#{edge[:source]} #{edge[:relationship]} #{edge[:association_name]}"
       end
     end
   end
