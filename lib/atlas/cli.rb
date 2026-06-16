@@ -1,5 +1,6 @@
 require "thor"
 require "json"
+require_relative "project"
 require_relative "scanner"
 require_relative "association_extractor"
 require_relative "graph_builder"
@@ -7,6 +8,8 @@ require_relative "stats"
 require_relative "graph_exporter"
 require_relative "inspector"
 require_relative "path_finder"
+require_relative "neighbors"
+
 
 module Atlas
   class CLI < Thor
@@ -89,6 +92,25 @@ module Atlas
         puts node
 
         puts " ↓" unless index == result.length - 1
+      end
+    end
+
+    desc "neighbors MODEL", "Show directly connected neighbors"
+
+    def neighbors(path, model)
+      scanner = Scanner.new(path)
+      graph = GraphBuilder.new(scanner).build
+      neighbors = Neighbors.new(graph).find(model)
+
+      puts
+      puts "Model: #{model}"
+      puts
+      puts "Directly Connected Models"
+      puts "-------------------------"
+
+      neighbors.each do |neighbor|
+        arrow = neighbor[:direction] == :outgoing ? "→" : "←"
+        puts "#{arrow} #{neighbor[:relationship]} #{neighbor[:model]}"
       end
     end
   end
