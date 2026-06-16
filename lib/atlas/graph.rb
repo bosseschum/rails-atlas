@@ -26,7 +26,7 @@ module Atlas
       neighbors(node).count
     end
 
-    def shortest_path(start_node, end_node)
+    def shortest_path(start_node, end_node) # rubocop:disable Metrics/MethodLength
       queue = [[start_node]]
       visited = Set.new([start_node])
 
@@ -45,6 +45,62 @@ module Atlas
       end
 
       nil
+    end
+
+    def reachable_from(start_node) # rubocop:disable Metrics/MethodLength
+      visited = Set.new
+      queue = [start_node]
+
+      until queue.empty?
+        current = queue.shift
+        next if visited.include?(current)
+
+        visited << current
+
+        neighbors(current).each do |neighbor|
+          queue << neighbor
+        end
+      end
+
+      visited.to_a - [start_node]
+    end
+
+    def connections_for(node) # rubocop:disable Metrics/MethodLength
+      connections = []
+
+      edges.each do |edge|
+        if edge[:source] == node
+          connections << {
+            model: edge[:target],
+            relationship: edge[:relationship],
+            association_name: edge[:association_name],
+            direction: :outgoing
+          }
+        end
+
+        next unless edge[:target] == node
+
+        connections << {
+          model: edge[:source],
+          relationship: edge[:relationship],
+          association_name: edge[:association_name],
+          direction: :incoming
+        }
+      end
+
+      connections
+    end
+
+    def outgoing_connections(node)
+      connections_for(node).select { |c| c[:direction] == :outgoing }
+    end
+
+    def incoming_connections(node)
+      connections_for(node).select { |c| c[:direction] == :incoming }
+    end
+
+    def node_ids
+      nodes.map { |node| node[:id] }
     end
   end
 end

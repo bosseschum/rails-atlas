@@ -35,5 +35,9 @@ module Atlas
     def smells
       @smells ||= Smells.new(graph)
     end
+
+    def impact
+      @impact ||= Impact.new(graph)
+    end
   end
 end

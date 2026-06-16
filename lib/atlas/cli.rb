@@ -13,9 +13,10 @@ require_relative 'path_finder'
 require_relative 'neighbors'
 require_relative 'hotspots'
 require_relative 'smells'
+require_relative 'impact'
 
 module Atlas
-  class CLI < Thor # rubocop:disable Style/Documentation
+  class CLI < Thor # rubocop:disable Style/Documentation,Metrics/ClassLength
     desc 'scan PATH', 'Scan a Rails application'
 
     def scan(path)
@@ -70,7 +71,7 @@ module Atlas
       puts '----------------------'
 
       result[:incoming].each do |edge|
-        puts "#{edge[:source]} #{edge[:relationship]} #{edge[:association_name]}"
+        puts "#{edge[:model]} #{edge[:relationship]} #{edge[:association_name]}"
       end
     end
 
@@ -131,7 +132,7 @@ module Atlas
 
     desc 'smells PATH', 'Show architectural smells'
 
-    def smells(path)
+    def smells(path) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       project = Project.new(path)
 
       puts
@@ -139,9 +140,41 @@ module Atlas
       puts '-------------------'
       puts
 
+      puts 'Potential God Models'
+      puts '-------------------'
+      puts
+
       project.smells.god_models.each do |model, count|
         puts "#{model} - #{count} connections"
       end
+
+      puts
+      puts 'Leaf Models'
+      puts '-----------'
+      puts
+
+      project.smells.orphan_models.each do |model|
+        puts model
+      end
+    end
+
+    desc 'impact MODEL', 'Analyze impact of a model'
+
+    def impact(path, model) # rubocop:disable Metrics/MethodLength
+      project = Project.new(path)
+      impact = project.impact.analyze(model)
+
+      puts
+      puts "Impact Analysis: #{model}"
+      puts '-------------------------'
+      puts
+
+      impact.sort.each do |name|
+        puts name
+      end
+
+      puts
+      puts "Total Reach: #{impact.count} models"
     end
   end
 end

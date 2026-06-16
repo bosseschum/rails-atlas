@@ -7,8 +7,8 @@ module Atlas
     end
 
     def top(limit = 10)
-      @graph.nodes
-            .map { |node| [node, @graph.degree(node)] }
+      @graph.node_ids
+            .map { |node_id| [node_id, @graph.degree(node_id)] }
             .sort_by { |_, degree| -degree }
             .first(limit)
     end

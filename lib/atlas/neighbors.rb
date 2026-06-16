@@ -6,30 +6,8 @@ module Atlas
       @graph = graph
     end
 
-    def find(model_name) # rubocop:disable Metrics/MethodLength
-      connected = []
-
-      @graph.edges.each do |edge|
-        next unless edge[:source] == model_name
-
-        connected << {
-          model: edge[:target],
-          relationship: edge[:relationship],
-          association_name: edge[:association_name],
-          direction: :outgoing
-        }
-
-        next unless edge[:target] == model_name
-
-        connected << {
-          model: edge[:source],
-          relationship: edge[:relationship],
-          association_name: edge[:association_name],
-          direction: :incoming
-        }
-      end
-
-      connected.uniq { |c| c[:model] }
+    def find(model_name)
+      @graph.connections_for(model_name)
     end
   end
 end
