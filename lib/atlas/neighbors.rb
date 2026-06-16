@@ -12,6 +12,7 @@ module Atlas
           connected << {
             model: edge[:target],
             relationship: edge[:relationship],
+            association_name: edge[:association_name],
             direction: :outgoing
           }
         end
@@ -20,6 +21,7 @@ module Atlas
           connected << {
             model: edge[:source],
             relationship: edge[:relationship],
+            association_name: edge[:association_name],
             direction: :incoming
           }
         end

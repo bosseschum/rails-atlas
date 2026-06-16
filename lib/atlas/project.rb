@@ -13,5 +13,17 @@ module Atlas
     def graph
       @graph ||= GraphBuilder.new(scanner).build
     end
+
+    def inspector
+      @inspector ||= Inspector.new(graph)
+    end
+
+    def path_finder
+      @path_finder ||= PathFinder.new(graph)
+    end
+
+    def neighbors
+      @neighbors ||= Neighbors.new(graph)
+    end
   end
 end

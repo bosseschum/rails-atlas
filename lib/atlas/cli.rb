@@ -49,7 +49,7 @@ module Atlas
     def model(path, model)
       project = Project.new(path)
 
-      result = Inspector.new(project.graph).inspect(model)
+      result = project.inspector.inspect(model)
 
       puts
       puts "Model: #{model}"
@@ -75,7 +75,7 @@ module Atlas
 
     def path(path, start, end_node)
       project = Project.new(path)
-      result = PathFinder.new(project.graph).find_path(start, end_node)
+      result = project.path_finder.find_path(start, end_node)
 
       if result.nil?
         puts "No path found"
@@ -94,7 +94,7 @@ module Atlas
 
     def neighbors(path, model)
       project = Project.new(path)
-      neighbors = Neighbors.new(project.graph).find(model)
+      neighbors = project.neighbors.find(model)
 
       puts
       puts "Model: #{model}"
@@ -103,8 +103,11 @@ module Atlas
       puts "-------------------------"
 
       neighbors.each do |neighbor|
-        arrow = neighbor[:direction] == :outgoing ? "→" : "←"
-        puts "#{arrow} #{neighbor[:relationship]} #{neighbor[:model]}"
+        if neighbor[:direction] == :outgoing
+          puts "[OUT] #{neighbor[:relationship]} #{neighbor[:association_name]} → #{neighbor[:model]}"
+        else
+          puts "[IN] #{neighbor[:model]} #{neighbor[:relationship]} #{neighbor[:association_name]}"
+        end
       end
     end
   end
