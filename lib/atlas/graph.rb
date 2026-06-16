@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'set'
-
 module Atlas
   class Graph # rubocop:disable Style/Documentation
     attr_reader :nodes, :edges
@@ -22,8 +20,19 @@ module Atlas
       connected.uniq
     end
 
-    def degree(node)
-      neighbors(node).count
+    def degree(node_name)
+      edges.count do |edge|
+        edge[:source] == node_name || edge[:target] == node_name
+      end
+    end
+
+    def node_data
+      nodes.map do |node|
+        {
+          id: node[:id],
+          degree: degree(node[:id])
+        }
+      end
     end
 
     def shortest_path(start_node, end_node) # rubocop:disable Metrics/MethodLength

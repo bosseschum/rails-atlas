@@ -18,18 +18,8 @@ module Atlas
     get '/api/graph' do
       content_type :json
       {
-        "nodes": [
-          { id: 'member', type: 'model' },
-          { id: 'organization', type: 'model' }
-        ],
-        "edges": [
-          {
-            source: 'member',
-            target: 'organization',
-            relationship: 'has_many',
-            association_name: 'organizations'
-          }
-        ]
+        nodes: self.class.project.graph.node_data,
+        edges: self.class.project.graph.edges
       }.to_json
     end
 

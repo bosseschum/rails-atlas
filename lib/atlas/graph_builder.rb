@@ -16,6 +16,9 @@ module Atlas
 
       @scanner.model_files.each do |file|
         model_name = File.basename(file, '.rb')
+
+        next if model_name == "application_record"
+
         nodes << {
           id: model_name,
           type: 'model',
