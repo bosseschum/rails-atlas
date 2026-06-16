@@ -2,7 +2,11 @@
 
 source "https://rubygems.org"
 
-# gem "rails"
 gem "thor"
 gem "prism"
 gem "rspec"
+
+group :development do
+  gem "ruby-lsp"
+  gem "rubocop"
+end

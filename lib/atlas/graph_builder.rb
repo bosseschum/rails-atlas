@@ -21,7 +21,7 @@ module Atlas
         extractor = AssociationExtractor.new(file)
 
         extractor.extract.each do |association|
-          target = association[:target].to_s.singularize
+          association[:target].to_s.singularize
 
           edges << {
             source: model_name,
