@@ -16,13 +16,11 @@ module Atlas
     desc "scan PATH", "Scan a Rails application"
 
     def scan(path)
-      scanner = Scanner.new(path)
-
-      graph = GraphBuilder.new(scanner).build
+      project = Project.new(path)
 
       File.write(
         "atlas.json",
-        JSON.pretty_generate(graph),
+        JSON.pretty_generate(project.graph),
       )
 
       puts "Scan complete. Atlas graph saved to atlas.json"
@@ -31,19 +29,17 @@ module Atlas
     desc "stats PATH", "Show graph statistics"
 
     def stats(path)
-      scanner = Scanner.new(path)
+      project = Project.new(path)
 
-      graph = GraphBuilder.new(scanner).build
-
-      Stats.new(graph).print
+      Stats.new(project.graph).print
     end
 
     desc "graph PATH", "Generate graph files"
 
     def graph(path)
-      scanner = Scanner.new(path)
-      graph = GraphBuilder.new(scanner).build
-      GraphExporter.new(graph).export_dot
+      project = Project.new(path)
+
+      GraphExporter.new(project.graph).export_dot
 
       puts "Generate atlas.dot"
     end
@@ -51,9 +47,9 @@ module Atlas
     desc "model PATH MODEL", "Inspect a model"
 
     def model(path, model)
-      scanner = Scanner.new(path)
-      graph = GraphBuilder.new(scanner).build
-      result = Inspector.new(graph).inspect(model)
+      project = Project.new(path)
+
+      result = Inspector.new(project.graph).inspect(model)
 
       puts
       puts "Model: #{model}"
@@ -78,9 +74,8 @@ module Atlas
     desc "path PATH START END", "Find path between two models"
 
     def path(path, start, end_node)
-      scanner = Scanner.new(path)
-      graph = GraphBuilder.new(scanner).build
-      result = PathFinder.new(graph).find_path(start, end_node)
+      project = Project.new(path)
+      result = PathFinder.new(project.graph).find_path(start, end_node)
 
       if result.nil?
         puts "No path found"
@@ -98,9 +93,8 @@ module Atlas
     desc "neighbors MODEL", "Show directly connected neighbors"
 
     def neighbors(path, model)
-      scanner = Scanner.new(path)
-      graph = GraphBuilder.new(scanner).build
-      neighbors = Neighbors.new(graph).find(model)
+      project = Project.new(path)
+      neighbors = Neighbors.new(project.graph).find(model)
 
       puts
       puts "Model: #{model}"
