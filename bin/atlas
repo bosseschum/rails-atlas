@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require_relative "../lib/atlas/cli"
+require 'atlas'
 
 Atlas::CLI.start(ARGV)

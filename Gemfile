@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "thor"
-gem "prism"
-gem "rspec"
+gemspec
+
+gem 'prism'
+gem 'rspec'
+gem 'thor'
 
 group :development do
-  gem "ruby-lsp"
-  gem "rubocop"
+  gem 'rubocop'
+  gem 'ruby-lsp'
 end
