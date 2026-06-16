@@ -6,6 +6,7 @@ require_relative "graph_builder"
 require_relative "stats"
 require_relative "graph_exporter"
 require_relative "inspector"
+require_relative "path_finder"
 
 module Atlas
   class CLI < Thor
@@ -59,7 +60,7 @@ module Atlas
       puts "----------------------"
 
       result[:outgoing].each do |edge|
-        puts "#{edge[:relationship]} -> #{edge[:association_name]}"
+        puts "#{edge[:relationship]} #{edge[:association_name]}"
       end
 
       puts
@@ -68,6 +69,26 @@ module Atlas
 
       result[:incoming].each do |edge|
         puts "#{edge[:source]} #{edge[:relationship]} #{edge[:association_name]}"
+      end
+    end
+
+    desc "path PATH START END", "Find path between two models"
+
+    def path(path, start, end_node)
+      scanner = Scanner.new(path)
+      graph = GraphBuilder.new(scanner).build
+      result = PathFinder.new(graph).find_path(start, end_node)
+
+      if result.nil?
+        puts "No path found"
+        return
+      end
+
+      puts
+      result.each_with_index do |node, index|
+        puts node
+
+        puts " ↓" unless index == result.length - 1
       end
     end
   end
