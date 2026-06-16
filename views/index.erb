@@ -2,24 +2,56 @@
 <html>
 <head>
   <title>Rails Atlas</title>
-</head>
-<body>
-  <h1>Rails Atlas</h1>
 
-  <ul id="output">
-    <li>Loading...</li>
-  </ul>
+  <script
+    type="text/javascript"
+    src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+    }
+
+    #network {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="network"></div>
 
   <script>
     fetch('/api/graph')
-        .then(r => r.json())
-        .then(data => {
-        const output = document.getElementById('output')
+      .then(response => response.json())
+      .then(data => {
 
-        output.innerHTML = data.nodes
-            .map(node => `<li>${node.id}</li>`)
-            .join('')
-        })
+        const nodes = new vis.DataSet(
+          data.nodes.map(node => ({
+            id: node.id,
+            label: node.id
+          }))
+        )
+
+        const edges = new vis.DataSet(
+          data.edges.map(edge => ({
+            from: edge.source,
+            to: edge.target,
+            label: edge.relationship
+          }))
+        )
+
+        new vis.Network(
+          document.getElementById('network'),
+          { nodes, edges },
+          {
+            physics: true
+          }
+        )
+      })
   </script>
 </body>
 </html>
