@@ -1,0 +1,54 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+#network {
+    width: calc(100vw - 300px);
+    height: 100vh;
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    width: 300px;
+    height: 100vh;
+
+    background-color: white;
+    border-left: 1px solid #ddd;
+
+    box-sizing: border-box;
+}
+
+#sidebar-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+#drag-handle {
+    position: absolute;
+    top: 50%;
+    left: -3px;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 50px;
+    background-color: #ccc;
+    cursor: col-resize;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+#search {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+
+    z-index: 1000;
+
+    padding: 8px;
+    width: 250px;
+}

@@ -5,6 +5,9 @@ require 'json'
 
 module Atlas
   class Server < Sinatra::Base # rubocop:disable Style/Documentation
+    set :public_folder, File.expand_path('../../public', __dir__)
+    set :static, true
+
     class << self
       attr_accessor :project
     end
@@ -39,6 +42,24 @@ module Atlas
       content_type :json
       self.class.project.graph
           .reachable_from(params[:name])
+          .to_json
+    end
+
+    get '/api/path/:from/:to' do
+      content_type :json
+
+      self.class.project
+          .graph
+          .shortest_path(params[:from], params[:to])
+          .to_json
+    end
+
+    get '/api/model/:name' do
+      content_type :json
+
+      self.class.project
+          .graph
+          .metrics_for(params[:name])
           .to_json
     end
   end

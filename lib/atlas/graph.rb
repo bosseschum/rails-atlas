@@ -20,10 +20,8 @@ module Atlas
       connected.uniq
     end
 
-    def degree(node_name)
-      edges.count do |edge|
-        edge[:source] == node_name || edge[:target] == node_name
-      end
+    def degree(node)
+      connections_for(node).size
     end
 
     def node_data
@@ -110,6 +108,17 @@ module Atlas
 
     def node_ids
       nodes.map { |node| node[:id] }
+    end
+
+    def metrics_for(node)
+      {
+        degree: degree(node),
+        impact: reachable_from(node).size,
+        incoming: incoming_connections(node).size,
+        outgoing: outgoing_connections(node).size,
+        hotspot: degree(node) > 10,
+        orphan: degree(node).zero?
+      }
     end
   end
 end
