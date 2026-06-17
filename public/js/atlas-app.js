@@ -16,9 +16,13 @@ export class AtlasApp {
     this.graphView.render(graphData);
     this.graphView.onClick((params) => this.handleClick(params));
 
+    // wire search
     document.getElementById("search").addEventListener("input", (event) => {
       this.graphView.filterBySearch(event.target.value);
     });
+
+    // wire controls (edge labels, association filters, smells)
+    this.setupControls();
 
     new SidebarResizer({
       sidebar: document.getElementById("sidebar"),
@@ -26,6 +30,42 @@ export class AtlasApp {
       networkContainer: document.getElementById("network"),
       onResize: () => this.graphView.redrawAndFit(),
     });
+  }
+
+  setupControls() {
+    const labelsCheckbox = document.getElementById("toggle_edge_labels");
+    if (labelsCheckbox) {
+      labelsCheckbox.addEventListener("change", (e) => {
+        this.graphView.toggleEdgeLabels(e.target.checked);
+      });
+    }
+
+    const associationCheckboxes = Array.from(
+      document.querySelectorAll(".association-filter"),
+    );
+    if (associationCheckboxes.length > 0) {
+      const updateFilter = () => {
+        const allowed = new Set(
+          associationCheckboxes.filter((c) => c.checked).map((c) => c.value),
+        );
+        this.graphView.filterByRelationship(allowed);
+      };
+
+      associationCheckboxes.forEach((cb) =>
+        cb.addEventListener("change", updateFilter),
+      );
+
+      // initial filter (show all checked by default)
+      updateFilter();
+    }
+
+    const smellsBtn = document.getElementById("show-smells");
+    if (smellsBtn) {
+      smellsBtn.addEventListener("click", async () => {
+        const smells = await this.api.getSmells();
+        this.sidebar.showSmells(smells);
+      });
+    }
   }
 
   handleClick(params) {

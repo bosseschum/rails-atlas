@@ -62,5 +62,14 @@ module Atlas
           .metrics_for(params[:name])
           .to_json
     end
+
+    get '/api/smells' do
+      content_type :json
+      {
+        god_models: self.class.project.smells.god_models,
+        orphans: self.class.project.smells.orphan_models,
+        high_impact: self.class.project.hotspots.top
+      }
+    end
   end
 end

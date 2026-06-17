@@ -12,7 +12,23 @@
 </head>
 
 <body>
-  <input type="text" id="search" placeholder="Find model..."/>
+<div id="controls" class="top-bar">
+  <div class="search-section">
+    <input type="text" id="search" placeholder="Find model..."/>
+  </div>
+
+  <div class="filter-section">
+    <label><input type="checkbox" class="association-filter" value="belongs_to" checked> belongs_to</label>
+    <label><input type="checkbox" class="association-filter" value="has_many" checked> has_many</label>
+    <label><input type="checkbox" class="association-filter" value="has_one" checked> has_one</label>
+    <label><input type="checkbox" class="association-filter" value="has_and_belongs_to_many" checked> habtm</label>
+  </div>
+
+  <div class="action-section">
+    <label><input type="checkbox" id="toggle_edge_labels" checked> Show edge labels</label>
+    <button id="show-smells">Smells</button>
+  </div>
+</div>
   <div id="network"></div>
 
   <div id="sidebar">

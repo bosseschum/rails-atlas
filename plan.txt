@@ -1,0 +1,262 @@
+Phase 1 — Complete the Model Explorer
+
+These are the features I'd build next because they reuse everything you've already written.
+
+✅ Existing
+Scan models
+Associations
+Graph generation
+Graphviz export
+Stats
+Hotspots
+Smells
+Impact analysis
+Path finding
+Neighbors
+Web UI
+Search
+Sidebar
+Next
+Path Highlighting
+
+Status:
+
+90% done
+
+This is the obvious next feature.
+
+Model Metrics
+
+Sidebar:
+
+Organization
+
+Connections: 10
+Incoming: 2
+Outgoing: 8
+Impact Reach: 11
+
+You already have the data.
+
+Edge Labels
+
+Instead of:
+
+member ───► organization
+
+show:
+
+organizations
+
+on the edge.
+
+Huge readability improvement.
+
+Filter Associations
+
+Checkboxes:
+
+☑ belongs_to
+☑ has_many
+☑ has_one
+
+Very useful on large apps.
+
+Smells Panel
+
+Sidebar:
+
+God Models
+Orphans
+High Impact Models
+
+powered by your existing smell detector.
+
+Phase 2 — Understand Rails
+
+This is where Atlas becomes interesting.
+
+Controllers
+
+Detect:
+
+class ProductsController
+
+Graph:
+
+ProductsController
+        ↓
+Product
+
+New node type:
+
+green = controller
+Services
+
+Detect:
+
+CreatePurchase.call
+
+Graph:
+
+PurchasesController
+          ↓
+CreatePurchase
+          ↓
+Purchase
+Product
+
+This is where Rails complexity usually lives.
+
+Jobs
+
+Detect:
+
+SendInvoiceJob.perform_later
+
+Graph:
+
+Purchase
+    ↓
+SendInvoiceJob
+Mailers
+Purchase
+    ↓
+ReceiptMailer
+Concerns
+
+Many Rails apps hide complexity in:
+
+app/models/concerns
+
+Atlas should surface them.
+
+Namespaces
+
+Support:
+
+Admin::User
+Api::V1::User
+
+Cleanly.
+
+Phase 3 — Engineering Tool
+
+This is where Atlas stops being visualization and starts being analysis.
+
+Impact Explorer
+
+Click:
+
+Organization
+
+Atlas answers:
+
+11 models affected
+
+Highest Risk Path:
+Organization
+ ↓
+Product
+ ↓
+Purchase
+Architecture Rules
+
+Config:
+
+forbidden_dependencies:
+  - Admin -> Billing
+  - Api -> Internal
+
+Atlas reports violations.
+
+Circular Dependency Detection
+
+Example:
+
+A -> B -> C -> A
+
+Flag immediately.
+
+Bounded Context Detection
+
+Automatically cluster:
+
+Inventory
+Payments
+Users
+Reporting
+
+based on graph structure.
+
+Architecture Diff
+
+Compare two commits:
+
+atlas diff HEAD~1 HEAD
+
+Output:
+
+Added:
+- Product -> InventoryCount
+
+Removed:
+- Purchase -> Product
+CI Mode
+
+GitHub Action:
+
+atlas check
+
+Fails build if:
+
+- New circular dependency
+- New god model
+- Layer violation
+Long-Term Vision
+
+The really interesting version of Atlas isn't:
+
+Models
+
+It's:
+
+Controllers
+Services
+Models
+Jobs
+Mailers
+External APIs
+
+all in one graph.
+
+Imagine opening a Rails app you've never seen and Atlas showing:
+
+CheckoutController
+       ↓
+CreatePurchase
+       ↓
+Purchase
+       ↓
+StripeGateway
+       ↓
+SendReceiptJob
+       ↓
+ReceiptMailer
+
+That's the kind of view that can replace hours of code spelunking.
+
+If I were prioritizing the next 10 features:
+
+1. Path highlighting
+2. Metrics sidebar
+3. Edge labels
+4. Association filters
+5. Smells panel
+6. Controllers
+7. Services
+8. Jobs
+9. Circular dependency detection
+10. Architecture diff
+
+Features 1–5 make Atlas feel complete. Features 6–10 are what could make it genuinely stand out from existing Rails ERD and dependency visualization tools.

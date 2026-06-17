@@ -41,6 +41,13 @@ export class GraphView {
         from: edge.source,
         to: edge.target,
         arrows: "to",
+        relationship: edge.relationship,
+        association_name: edge.association_name,
+        labelText: edge.association_name || edge.relationship,
+        label: this.showEdgeLabels
+          ? edge.association_name || edge.relationship
+          : "",
+        font: { align: "top" },
       })),
     );
 
@@ -63,7 +70,9 @@ export class GraphView {
     this.nodes.forEach((node) => {
       this.nodes.update({
         id: node.id,
-        hidden: normalized.length > 0 && !node.label.toLowerCase().includes(normalized),
+        hidden:
+          normalized.length > 0 &&
+          !node.label.toLowerCase().includes(normalized),
       });
     });
   }
@@ -109,6 +118,28 @@ export class GraphView {
       this.nodes.update({
         id: node.id,
         color: pathNodes.has(node.id) ? COLOR.pathActive : COLOR.faded,
+      });
+    });
+  }
+
+  toggleEdgeLabels(show) {
+    this.showEdgeLabels = !!show;
+    this.edges.forEach((edge) => {
+      this.edges.update({
+        id: edge.id,
+        label: this.showEdgeLabels ? edge.label : "",
+      });
+    });
+  }
+
+  filterByRelationship(allowedSet) {
+    const hasFilter = allowedSet && allowedSet.size > 0;
+
+    this.edges.forEach((edge) => {
+      const visible = !hasFilter || allowedSet.has(edge.relationship);
+      this.edges.update({
+        id: edge.id,
+        hidden: !visible,
       });
     });
   }

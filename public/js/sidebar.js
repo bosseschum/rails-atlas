@@ -25,6 +25,8 @@ export class Sidebar {
       <h3>Metrics</h3>
       <ul>
         <li>Connections: ${metrics.degree}</li>
+        <li>Incoming: ${metrics.incoming}</li>
+        <li>Outgoing: ${metrics.outgoing}</li>
         <li>Impact Reach: ${metrics.impact}</li>
       </ul>
 
@@ -59,5 +61,38 @@ export class Sidebar {
       </ul>
       <p>Path length: ${path.length - 1}</p>
     `;
+  }
+
+  showSmells(smells) {
+    const godModels = Object.entries(smells.god_models || {})
+      .map(([m, c]) => `<li>${m} — ${c} connections</li>`)
+      .join("");
+
+    const orphans = (smells.orphan_models || [])
+      .map((m) => `<li>${m}</li>`)
+      .join("");
+
+    const hotspots = (smells.hotspots || [])
+      .map((pair) => {
+        // pair may be [model, count]
+        if (Array.isArray(pair)) {
+          return `<li>${pair[0]} — ${pair[1]}</li>`;
+        }
+        return `<li>${pair}</li>`;
+      })
+      .join("");
+
+    this.container.innerHTML = `
+         <h2>Smells</h2>
+
+         <h3>God Models</h3>
+         <ul>${godModels || "<li>None found</li>"}</ul>
+
+         <h3>Orphans</h3>
+         <ul>${orphans || "<li>None found</li>"}</ul>
+
+         <h3>Hotspots</h3>
+         <ul>${hotspots || "<li>None found</li>"}</ul>
+       `;
   }
 }

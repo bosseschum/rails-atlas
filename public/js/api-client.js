@@ -25,4 +25,9 @@ export class ApiClient {
     );
     return response.json();
   }
+
+  async getSmells() {
+    const response = await fetch("/api/smells");
+    return response.json();
+  }
 }
