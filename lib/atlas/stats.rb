@@ -1,21 +1,23 @@
+# frozen_string_literal: true
+
 module Atlas
-  class Stats
+  class Stats # rubocop:disable Style/Documentation
     def initialize(graph)
       @graph = graph
     end
 
-    def print
+    def print # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       puts
-      puts "Atlas Statistics"
-      puts "----------------"
+      puts 'Atlas Statistics'
+      puts '----------------'
       puts
 
       puts "Models: #{@graph[:nodes].count}"
       puts "Associations: #{@graph[:edges].count}"
 
       puts
-      puts "Most Connected Models:"
-      puts "----------------"
+      puts 'Most Connected Models:'
+      puts '----------------'
       puts
 
       connection_counts.each do |model, count|
@@ -23,8 +25,8 @@ module Atlas
       end
 
       puts
-      puts "Association Types:"
-      puts "----------------"
+      puts 'Association Types:'
+      puts '----------------'
       puts
 
       association_types.each do |type, count|
@@ -32,8 +34,8 @@ module Atlas
       end
 
       puts
-      puts "Architecture Hotspots:"
-      puts "----------------"
+      puts 'Architecture Hotspots:'
+      puts '----------------'
       puts
 
       hotspots.each do |model|
@@ -56,8 +58,8 @@ module Atlas
 
     def association_types
       @graph[:edges]
-      .group_by { |edge| edge[:relationship]}
-      .transform_values(&:count)
+        .group_by { |edge| edge[:relationship] }
+        .transform_values(&:count)
     end
 
     def hotspots

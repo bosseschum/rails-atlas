@@ -39,7 +39,7 @@ module Atlas
           associations << {
             type: method_name,
             association_name: target,
-            target: target.to_s.singularize
+            target: target.to_s.singularize.camelize
           }
         end
       end

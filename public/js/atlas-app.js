@@ -52,7 +52,7 @@ export class AtlasApp {
       this.api.getImpact(model),
     ]);
 
-    this.sidebar.showModel(metrics, connections, impact);
+    this.sidebar.showModel(model, metrics, connections, impact);
     this.graphView.highlightImpact(model, impact);
   }
 

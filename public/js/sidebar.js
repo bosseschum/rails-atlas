@@ -18,9 +18,9 @@ export class Sidebar {
     `;
   }
 
-  showModel(metrics, connections, impact) {
+  showModel(name, metrics, connections, impact) {
     this.container.innerHTML = `
-      <h2>${metrics.name}</h2>
+      <h2>${name}</h2>
 
       <h3>Metrics</h3>
       <ul>
@@ -28,6 +28,7 @@ export class Sidebar {
         <li>Impact Reach: ${metrics.impact}</li>
       </ul>
 
+      <h3>Connections</h3>
       <ul>
         ${connections
           .map(

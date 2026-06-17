@@ -24,7 +24,7 @@ module Atlas
 
       File.write(
         'atlas.json',
-        JSON.pretty_generate(project.graph)
+        JSON.pretty_generate(nodes: project.graph.nodes, edges: project.graph.edges)
       )
 
       puts 'Scan complete. Atlas graph saved to atlas.json'
@@ -117,7 +117,7 @@ module Atlas
 
     desc 'hotspots PATH', 'Show architecture hotspots'
 
-    def hotspots(path, _limit = 10)
+    def hotspots(path, limit)
       project = Project.new(path)
 
       puts
@@ -125,7 +125,7 @@ module Atlas
       puts '---------------------'
       puts
 
-      project.hotspots.top.each do |model, count|
+      project.hotspots.top(limit).each do |model, count|
         puts "#{model} (#{count})"
       end
     end

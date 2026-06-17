@@ -18,10 +18,9 @@ module Atlas
     end
 
     def orphan_models(threshold: 1)
-      @graph.node_ids.select do |node_id|
-        @graph.degree(node_id) <= threshold # rubocop:disable Lint/Void
-        next if node_id == 'application_record'
-      end
+      @graph.node_ids
+            .reject { |node_id| node_id == 'application_record' }
+            .select { |node_id| @graph.degree(node_id) <= threshold }
     end
   end
 end
