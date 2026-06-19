@@ -19,9 +19,15 @@ export class GraphView {
     this.nodes = null;
     this.edges = null;
     this.network = null;
+    this.showEdgeLabels = true;
+
+    // Map edgeId -> { labelText, originalFont }
+    this.edgeMeta = new Map();
   }
 
   render(graphData) {
+    if (!graphData || !graphData.nodes || !graphData.edges) return null;
+
     this.nodes = new vis.DataSet(
       graphData.nodes.map((node) => {
         const color = colorForDegree(node.degree);
@@ -35,16 +41,41 @@ export class GraphView {
       }),
     );
 
-    this.edges = new vis.DataSet(
-      graphData.edges.map((edge, index) => ({
+    const defaultFont = { size: 10, align: "top", color: "#666666" };
+
+    const edgeItems = graphData.edges.map((edge, index) => {
+      const labelText = edge.relationship || "";
+
+      // store metadata so we can restore later
+      this.edgeMeta.set(index, {
+        labelText,
+        originalFont: { ...defaultFont },
+      });
+
+      return {
         id: index,
         from: edge.source,
         to: edge.target,
         arrows: "to",
-        label: edge.association_name,
-        font: { size: 10, align: "top", color: "#666666" },
-      })),
-    );
+        relationship: edge.relationship,
+        associationName: edge.association_name,
+        label: this.showEdgeLabels ? labelText : undefined,
+        font: this.showEdgeLabels
+          ? defaultFont
+          : { size: 0, align: "top", color: "rgba(0,0,0,0)" },
+      };
+    });
+
+    this.edges = new vis.DataSet(edgeItems);
+
+    // destroy previous network cleanly if present
+    if (this.network) {
+      try {
+        this.network.destroy();
+      } catch (e) {
+        // ignore if not available
+      }
+    }
 
     this.network = new vis.Network(
       this.container,
@@ -56,7 +87,7 @@ export class GraphView {
   }
 
   onClick(handler) {
-    this.network.on("click", handler);
+    if (this.network) this.network.on("click", handler);
   }
 
   filterBySearch(query) {
@@ -82,16 +113,23 @@ export class GraphView {
       });
     });
 
-    this.edges.forEach((edge) => {
+    const ids = this.edges.getIds();
+    for (const id of ids) {
+      const edge = this.edges.get(id);
       const connected = impacted.has(edge.from) && impacted.has(edge.to);
       this.edges.update({
-        id: edge.id,
+        id,
         color: connected ? COLOR.edgeActive : COLOR.faded,
       });
-    });
+    }
+
+    if (this.network && typeof this.network.redraw === "function")
+      this.network.redraw();
   }
 
   highlightPath(path) {
+    if (!Array.isArray(path)) return;
+
     const pathNodes = new Set(path);
     const pathEdges = new Set();
 
@@ -100,14 +138,16 @@ export class GraphView {
       pathEdges.add(`${path[i + 1]}->${path[i]}`);
     }
 
-    this.edges.forEach((edge) => {
+    const ids = this.edges.getIds();
+    for (const id of ids) {
+      const edge = this.edges.get(id);
       const active = pathEdges.has(`${edge.from}->${edge.to}`);
       this.edges.update({
-        id: edge.id,
+        id,
         color: active ? COLOR.pathActive : COLOR.faded,
         width: active ? 4 : 1,
       });
-    });
+    }
 
     this.nodes.forEach((node) => {
       this.nodes.update({
@@ -115,16 +155,73 @@ export class GraphView {
         color: pathNodes.has(node.id) ? COLOR.pathActive : COLOR.faded,
       });
     });
+
+    if (this.network && typeof this.network.redraw === "function")
+      this.network.redraw();
+  }
+
+  // Robust toggle: always restore from saved metadata
+  toggleEdgeLabels(show) {
+    this.showEdgeLabels = !!show;
+
+    const ids = this.edges.getIds();
+    for (const id of ids) {
+      const meta = this.edgeMeta.get(id) || {};
+      const edge = this.edges.get(id) || {};
+
+      if (this.showEdgeLabels) {
+        const label =
+          meta.labelText ?? edge.associationName ?? edge.relationship ?? "";
+        const font = meta.originalFont ??
+          edge.font ?? { size: 10, align: "top", color: "#666666" };
+        this.edges.update({ id, label, font });
+      } else {
+        // hide label: remove label and set tiny/transparent font to avoid reserved space
+        this.edges.update({
+          id,
+          label: undefined,
+          font: {
+            size: 0,
+            align: (meta.originalFont && meta.originalFont.align) || "top",
+            color: "rgba(0,0,0,0)",
+          },
+        });
+      }
+    }
+
+    if (this.network && typeof this.network.redraw === "function") {
+      this.network.redraw();
+    }
+  }
+
+  // Filter edges by their relationship type (expects a Set of allowed relationship strings)
+  filterByRelationship(allowedSet) {
+    const hasFilter = allowedSet && allowedSet.size > 0;
+    const ids = this.edges.getIds();
+    for (const id of ids) {
+      const e = this.edges.get(id);
+      const visible = !hasFilter || allowedSet.has(e.relationship);
+      this.edges.update({
+        id,
+        hidden: !visible,
+      });
+    }
+    if (this.network && typeof this.network.redraw === "function")
+      this.network.redraw();
   }
 
   reset() {
     this.nodes.forEach((node) => {
       this.nodes.update({ id: node.id, color: node.originalColor });
     });
+    if (this.network && typeof this.network.redraw === "function")
+      this.network.redraw();
   }
 
   redrawAndFit() {
-    this.network.redraw();
-    this.network.fit({ animation: false });
+    if (this.network) {
+      this.network.redraw();
+      this.network.fit({ animation: false });
+    }
   }
 }
