@@ -21,8 +21,9 @@ export class AtlasApp {
       this.graphView.filterBySearch(event.target.value);
     });
 
-    // wire controls (edge labels, association filters, smells)
+    // wire controls (edge labels, association filters, smells, theme)
     this.setupControls();
+    this.setupTheme();
 
     new SidebarResizer({
       sidebar: document.getElementById("sidebar"),
@@ -66,6 +67,42 @@ export class AtlasApp {
         this.sidebar.showSmells(smells);
       });
     }
+  }
+
+  setupTheme() {
+    const themeToggle = document.getElementById("theme-toggle");
+    if (!themeToggle) return;
+
+    const getPreferredTheme = () => {
+      const stored = localStorage.getItem("theme");
+      if (stored) return stored;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    };
+
+    const updateToggleUI = (theme) => {
+      themeToggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+      themeToggle.setAttribute(
+        "aria-label",
+        `Switch to ${theme === "dark" ? "light" : "dark"} theme`,
+      );
+    };
+
+    const currentTheme =
+      document.documentElement.getAttribute("data-theme") || getPreferredTheme();
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    updateToggleUI(currentTheme);
+
+    themeToggle.addEventListener("click", () => {
+      const activeTheme =
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "light"
+          : "dark";
+      document.documentElement.setAttribute("data-theme", activeTheme);
+      localStorage.setItem("theme", activeTheme);
+      updateToggleUI(activeTheme);
+    });
   }
 
   handleClick(params) {

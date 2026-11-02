@@ -9,6 +9,14 @@
   </script>
 
   <link rel="stylesheet" href="/css/atlas.css">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 </head>
 
 <body>
@@ -27,6 +35,7 @@
   <div class="action-section">
     <label><input type="checkbox" id="toggle_edge_labels" checked> Show edge labels</label>
     <button id="show-smells">Smells</button>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">🌙 Dark</button>
   </div>
 </div>
   <div id="network"></div>

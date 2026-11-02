@@ -1,8 +1,85 @@
+:root,
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-topbar: #ffffff;
+    --bg-sidebar: #ffffff;
+    --bg-network: #fafafa;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --border-color: #e0e0e0;
+    --border-sidebar: #dddddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+    --input-text: #1f2937;
+    --input-placeholder: #9ca3af;
+    --button-bg: #f3f4f6;
+    --button-text: #1f2937;
+    --button-border: #d1d5db;
+    --button-hover-bg: #e5e7eb;
+    --drag-handle-bg: #cccccc;
+    --drag-handle-hover-bg: #999999;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1a1b1e;
+    --bg-secondary: #25262b;
+    --bg-topbar: #1f2023;
+    --bg-sidebar: #1f2023;
+    --bg-network: #141517;
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --border-color: #373a40;
+    --border-sidebar: #373a40;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --input-bg: #2c2e33;
+    --input-border: #373a40;
+    --input-text: #f3f4f6;
+    --input-placeholder: #6b7280;
+    --button-bg: #2c2e33;
+    --button-text: #f3f4f6;
+    --button-border: #373a40;
+    --button-hover-bg: #373a40;
+    --drag-handle-bg: #4a4d53;
+    --drag-handle-hover-bg: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg-primary: #1a1b1e;
+        --bg-secondary: #25262b;
+        --bg-topbar: #1f2023;
+        --bg-sidebar: #1f2023;
+        --bg-network: #141517;
+        --text-primary: #f3f4f6;
+        --text-secondary: #d1d5db;
+        --text-muted: #9ca3af;
+        --border-color: #373a40;
+        --border-sidebar: #373a40;
+        --shadow-color: rgba(0, 0, 0, 0.4);
+        --input-bg: #2c2e33;
+        --input-border: #373a40;
+        --input-text: #f3f4f6;
+        --input-placeholder: #6b7280;
+        --button-bg: #2c2e33;
+        --button-text: #f3f4f6;
+        --button-border: #373a40;
+        --button-hover-bg: #373a40;
+        --drag-handle-bg: #4a4d53;
+        --drag-handle-hover-bg: #6b7280;
+    }
+}
+
 body {
     font-family: sans-serif;
     margin: 0;
     overflow: hidden;
     padding-top: 60px; /* Leaves room for the full-width top bar */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 /* Top Bar Container */
@@ -21,9 +98,62 @@ body {
     padding: 0 20px;
     box-sizing: border-box;
 
-    background-color: white;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-topbar);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    color: var(--text-primary);
+}
+
+.search-section,
+.filter-section,
+.action-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-bar input[type="text"] {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    padding: 6px 10px;
+    border-radius: 4px;
+    outline: none;
+    font-size: 14px;
+}
+
+.top-bar input[type="text"]::placeholder {
+    color: var(--input-placeholder);
+}
+
+.top-bar input[type="text"]:focus {
+    border-color: #3b82f6;
+}
+
+.top-bar label {
+    font-size: 14px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.top-bar button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--button-border);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.top-bar button:hover {
+    background-color: var(--button-hover-bg);
 }
 
 /* Main Map Component */
@@ -31,6 +161,7 @@ body {
     /* Keep this dynamic since the map still needs to shrink when sidebar pulls left */
     width: calc(100vw - 300px);
     height: calc(100vh - 60px);
+    background-color: var(--bg-network);
 }
 
 /* Sidebar Component */
@@ -42,10 +173,11 @@ body {
     width: 300px;
     height: calc(100vh - 60px); /* Fills remaining height */
 
-    background-color: white;
-    border-left: 1px solid #ddd;
+    background-color: var(--bg-sidebar);
+    border-left: 1px solid var(--border-sidebar);
     box-sizing: border-box;
     z-index: 1000; /* Sits below the top bar's shadow */
+    color: var(--text-primary);
 }
 
 #sidebar-content {
@@ -55,6 +187,21 @@ body {
     box-sizing: border-box;
 }
 
+#sidebar-content h2,
+#sidebar-content h3 {
+    margin-top: 0;
+    color: var(--text-primary);
+}
+
+#sidebar-content ul {
+    padding-left: 20px;
+    color: var(--text-secondary);
+}
+
+#sidebar-content li {
+    margin-bottom: 4px;
+}
+
 #drag-handle {
     position: absolute;
     top: 50%;
@@ -62,10 +209,12 @@ body {
     transform: translateY(-50%);
     width: 6px;
     height: 50px;
-    background-color: #ccc;
+    background-color: var(--drag-handle-bg);
     cursor: col-resize;
     border-radius: 10px;
     z-index: 10;
 }
 
-/* ... keep your existing search, label, and button styles from before ... */
+#drag-handle:hover {
+    background-color: var(--drag-handle-hover-bg);
+}
