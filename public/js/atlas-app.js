@@ -12,25 +12,36 @@ export class AtlasApp {
   }
 
   async init() {
-    const graphData = await this.api.getGraph();
-    this.graphView.render(graphData);
-    this.graphView.onClick((params) => this.handleClick(params));
-
-    // wire search
-    document.getElementById("search").addEventListener("input", (event) => {
-      this.graphView.filterBySearch(event.target.value);
-    });
-
-    // wire controls (edge labels, association filters, smells, theme)
-    this.setupControls();
+    // Wire UI controls, theme toggle, search, and resizer immediately
     this.setupTheme();
+    this.setupControls();
 
-    new SidebarResizer({
-      sidebar: document.getElementById("sidebar"),
-      handle: document.getElementById("drag-handle"),
-      networkContainer: document.getElementById("network"),
-      onResize: () => this.graphView.redrawAndFit(),
-    });
+    const searchInput = document.getElementById("search");
+    if (searchInput) {
+      searchInput.addEventListener("input", (event) => {
+        this.graphView.filterBySearch(event.target.value);
+      });
+    }
+
+    const sidebarElem = document.getElementById("sidebar");
+    const handleElem = document.getElementById("drag-handle");
+    const networkContainer = document.getElementById("network");
+    if (sidebarElem && handleElem && networkContainer) {
+      new SidebarResizer({
+        sidebar: sidebarElem,
+        handle: handleElem,
+        networkContainer: networkContainer,
+        onResize: () => this.graphView.redrawAndFit(),
+      });
+    }
+
+    try {
+      const graphData = await this.api.getGraph();
+      this.graphView.render(graphData);
+      this.graphView.onClick((params) => this.handleClick(params));
+    } catch (err) {
+      console.error("Failed to load graph data:", err);
+    }
   }
 
   setupControls() {
@@ -63,8 +74,12 @@ export class AtlasApp {
     const smellsBtn = document.getElementById("show-smells");
     if (smellsBtn) {
       smellsBtn.addEventListener("click", async () => {
-        const smells = await this.api.getSmells();
-        this.sidebar.showSmells(smells);
+        try {
+          const smells = await this.api.getSmells();
+          this.sidebar.showSmells(smells);
+        } catch (err) {
+          console.error("Failed to load smells:", err);
+        }
       });
     }
   }
@@ -74,18 +89,28 @@ export class AtlasApp {
     if (!themeToggle) return;
 
     const getPreferredTheme = () => {
-      const stored = localStorage.getItem("theme");
-      if (stored) return stored;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
+      try {
+        const stored = localStorage.getItem("theme");
+        if (stored === "dark" || stored === "light") return stored;
+      } catch (e) {
+        // storage may be restricted
+      }
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
     };
 
     const updateToggleUI = (theme) => {
-      themeToggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+      const isDark = theme === "dark";
+      themeToggle.textContent = isDark ? "☀️ Light" : "🌙 Dark";
+      const targetTheme = isDark ? "light" : "dark";
       themeToggle.setAttribute(
         "aria-label",
-        `Switch to ${theme === "dark" ? "light" : "dark"} theme`,
+        `Switch to ${targetTheme} theme`,
+      );
+      themeToggle.setAttribute(
+        "title",
+        `Switch to ${targetTheme} theme`,
       );
     };
 
@@ -100,9 +125,30 @@ export class AtlasApp {
           ? "light"
           : "dark";
       document.documentElement.setAttribute("data-theme", activeTheme);
-      localStorage.setItem("theme", activeTheme);
+      try {
+        localStorage.setItem("theme", activeTheme);
+      } catch (e) {
+        // ignore storage errors
+      }
       updateToggleUI(activeTheme);
     });
+
+    try {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mediaQuery && typeof mediaQuery.addEventListener === "function") {
+        mediaQuery.addEventListener("change", (e) => {
+          let stored = null;
+          try {
+            stored = localStorage.getItem("theme");
+          } catch (_) {}
+          if (!stored) {
+            const sysTheme = e.matches ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", sysTheme);
+            updateToggleUI(sysTheme);
+          }
+        });
+      }
+    } catch (_) {}
   }
 
   handleClick(params) {

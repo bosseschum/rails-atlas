@@ -91,6 +91,7 @@ export class GraphView {
   }
 
   filterBySearch(query) {
+    if (!this.nodes) return;
     const normalized = query.toLowerCase();
 
     this.nodes.forEach((node) => {
@@ -104,6 +105,7 @@ export class GraphView {
   }
 
   highlightImpact(selectedModel, impactModels) {
+    if (!this.nodes || !this.edges) return;
     const impacted = new Set([selectedModel, ...impactModels]);
 
     this.nodes.forEach((node) => {
@@ -128,7 +130,7 @@ export class GraphView {
   }
 
   highlightPath(path) {
-    if (!Array.isArray(path)) return;
+    if (!Array.isArray(path) || !this.nodes || !this.edges) return;
 
     const pathNodes = new Set(path);
     const pathEdges = new Set();
@@ -163,6 +165,7 @@ export class GraphView {
   // Robust toggle: always restore from saved metadata
   toggleEdgeLabels(show) {
     this.showEdgeLabels = !!show;
+    if (!this.edges) return;
 
     const ids = this.edges.getIds();
     for (const id of ids) {
@@ -196,6 +199,7 @@ export class GraphView {
 
   // Filter edges by their relationship type (expects a Set of allowed relationship strings)
   filterByRelationship(allowedSet) {
+    if (!this.edges) return;
     const hasFilter = allowedSet && allowedSet.size > 0;
     const ids = this.edges.getIds();
     for (const id of ids) {
@@ -211,6 +215,7 @@ export class GraphView {
   }
 
   reset() {
+    if (!this.nodes) return;
     this.nodes.forEach((node) => {
       this.nodes.update({ id: node.id, color: node.originalColor });
     });
